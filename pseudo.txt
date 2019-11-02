@@ -1,0 +1,24 @@
+14x8x4
+
+up: 23 down: 32 right: -30 left: 50
+up: down: right: left
+up down right left: 
+
+
+//
+array tridimensional a;
+iteraciones = definidas por el usuario.
+bool sobreescribir = definido por el usuario;
+bool existe = true;
+
+
+
+
+si no existe || sobreescribir{
+	rellena el array a ceros y hace todas las iteraciones;
+	escribe el fichero;
+} else si existe {
+	rellene el array con los datos e intente llegar a la meta
+}
+
+

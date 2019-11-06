@@ -1,10 +1,12 @@
 ﻿using Assets.Scripts.DataStructures;
+using System.IO;
 using UnityEngine;
 
 namespace Assets.Scripts.SampleMind
 {
     public class QLearningMind : AbstractPathMind
     {
+        //public Loader cargador;
         const int numEpisodios = 200;
         const int numAcciones = 4;
         const float alfa = 0.5f;
@@ -15,9 +17,71 @@ namespace Assets.Scripts.SampleMind
 
         bool primeraVez = true;
 
-        public bool ComprobadorFichero() 
+        void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) 
         {
-            return false;
+            StreamWriter fichero;
+            fichero = new StreamWriter(/*"F:/SSD_LENOVO/Universidad/Primer Cuatrimestre/IA/REPO_IA/IA Q-Learning Unity/" + */
+                nombreArchivo, false)/*File.AppendText(nombreArchivo)*/;
+            string linea;
+
+            for (int i = 0; i < boardInfo.NumColumns; i++)
+            {
+                for(int j = 0; j < boardInfo.NumRows; j++)
+                {
+                    linea = "";
+
+                    for(int k = 0; k < numAcciones; k++)
+                    {
+                        linea += tablaQ[i, j, k] + " ";
+                    }
+
+                    fichero.WriteLine(linea);
+                }
+            }
+
+            fichero.Close();
+        }
+
+        void LeerFichero(BoardInfo boardInfo, string nombreArchivo) 
+        {
+            tablaQ = new float[boardInfo.NumColumns, boardInfo.NumRows, numAcciones];
+            StreamReader fichero = File.OpenText(nombreArchivo);
+            string linea;
+            float[] valoresQ = new float[4];
+
+            for (int i = 0; i < boardInfo.NumColumns; i++)
+            {
+                for (int j = 0; j < boardInfo.NumRows; j++)
+                {
+                    linea = fichero.ReadLine();
+
+                    obtenerValoresQDeString(linea, valoresQ);
+
+                    for (int k = 0; k < numAcciones; k++)
+                    {
+                        tablaQ[i, j, k] = valoresQ[k];
+                    }
+                }
+            }
+            
+        }
+
+        void obtenerValoresQDeString(string linea, float[] valoresQ) 
+        {
+            int index = 0;
+            string numero;
+            for(int i = 0; i < valoresQ.Length; i++)
+            {
+                numero = "";
+                //index = 0;
+                while (linea[index] != ' ')
+                {
+                    numero += linea[index];
+                    index++;
+                }
+                index++;
+                valoresQ[i] = float.Parse(numero);
+            }
         }
 
         int ObtenerMejorAccion(int posX, int posY)
@@ -105,19 +169,26 @@ namespace Assets.Scripts.SampleMind
 
         public override Locomotion.MoveDirection GetNextMove(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
         {
-            /*
-             * METER EN AWAKE
-             * 
-             * if (!ComprobadorFichero()) // IMPORTANTE programar la comprobación
-            {
-                AlgoritmoQ(boardInfo, goals);
-            }
-            */
-
             if (primeraVez)
             {
                 primeraVez = false;
-                AlgoritmoQ(boardInfo, currentPos, goals);
+
+                //string nombreArchivo = 
+                Loader cargador = GameObject.Find("Loader").GetComponent<Loader>();
+                string nombreArchivo = "" + cargador.seed + ".txt";
+
+
+                if (!File.Exists(nombreArchivo))
+                {
+                    AlgoritmoQ(boardInfo, currentPos, goals);
+                    EscribirFichero(boardInfo, nombreArchivo);
+                }
+                else
+                {
+                    LeerFichero(boardInfo, nombreArchivo);
+                }
+
+
             }
 
             //var val = Random.Range(0, 4);

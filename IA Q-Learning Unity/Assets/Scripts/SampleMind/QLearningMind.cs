@@ -6,31 +6,29 @@ namespace Assets.Scripts.SampleMind
 {
     public class QLearningMind : AbstractPathMind
     {
-        //public Loader cargador;
-        const int numEpisodios = 200;
-        const int numAcciones = 4;
-        const float alfa = 0.5f;
-        const float gamma = 0.5f;
-        const int rMeta = 100;
-        const int rMuro = -10;
-        float[,,] tablaQ;
+        const int numEpisodios = 200; // Número de episodios
+        const int numAcciones = 4;    // Número de acciones posibles en cada estado (moverse hacia N, S, O, E)
+        const float alfa = 0.5f;      // Parámetro alfa de la regla de aprendizaje Q-Learning
+        const float gamma = 0.5f;     // Parámetro gamma de la regla de aprendizaje Q-Learning
+        const int rMeta = 100;        // Recompensa asignada por llegar a la meta
+        const int rMuro = -10;        // Recompensa asignada por llegar a un muro
+        float[,,] tablaQ;             // Array tridimensional que contiene los valores de calidad. [posición x entorno, posición y entorno, acción a tomar]
 
-        bool primeraVez = true;
+        bool primeraVez = true;       // Booleano que usamos para que la tablaQ se rellene una sola vez
 
-        void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) 
+        void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) // Función que crea un nuevo fichero y lo rellena con los datos de la tablaQ
         {
             StreamWriter fichero;
-            fichero = new StreamWriter(/*"F:/SSD_LENOVO/Universidad/Primer Cuatrimestre/IA/REPO_IA/IA Q-Learning Unity/" + */
-                nombreArchivo, false)/*File.AppendText(nombreArchivo)*/;
+            fichero = new StreamWriter(nombreArchivo, false);
             string linea;
 
-            for (int i = 0; i < boardInfo.NumColumns; i++)
+            for (int i = 0; i < boardInfo.NumColumns; i++)  // Recorrido del ancho y el alto del escenario
             {
                 for(int j = 0; j < boardInfo.NumRows; j++)
                 {
                     linea = "";
 
-                    for(int k = 0; k < numAcciones; k++)
+                    for(int k = 0; k < numAcciones; k++)    // Se escriben los 4 valores de calidad del estado correspondientes a cada acción, separados por espacios, en una sola línea
                     {
                         linea += tablaQ[i, j, k] + " ";
                     }
@@ -73,7 +71,6 @@ namespace Assets.Scripts.SampleMind
             for(int i = 0; i < valoresQ.Length; i++)
             {
                 numero = "";
-                //index = 0;
                 while (linea[index] != ' ')
                 {
                     numero += linea[index];
@@ -106,7 +103,7 @@ namespace Assets.Scripts.SampleMind
 
         }
 
-        public void AlgoritmoQ(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals) 
+        public void AlgoritmoQ(BoardInfo boardInfo, CellInfo[] goals) 
         {
             tablaQ = new float[boardInfo.NumColumns, boardInfo.NumRows, numAcciones];
 
@@ -130,10 +127,8 @@ namespace Assets.Scripts.SampleMind
             {
                 posicionX = Random.Range(0, boardInfo.NumColumns);
                 posicionY = Random.Range(0, boardInfo.NumRows);
-                //posicionX = currentPos.ColumnId;
-                //posicionY = currentPos.RowId;
 
-                while (/*boardInfo.CellInfos[ posicionX, posicionY ].Walkable &&*/ boardInfo.CellInfos[ posicionX, posicionY ] != goals[0])
+                while (boardInfo.CellInfos[ posicionX, posicionY ] != goals[0])
                 {
                     int posicionXactual = posicionX;
                     int posicionYactual = posicionY;
@@ -173,32 +168,26 @@ namespace Assets.Scripts.SampleMind
             {
                 primeraVez = false;
 
-                //string nombreArchivo = 
                 Loader cargador = GameObject.Find("Loader").GetComponent<Loader>();
-                string nombreArchivo = "" + cargador.seed + ".txt";
+                string nombreArchivo = "./tablasQ/" + cargador.seed + ".txt";
 
 
                 if (!File.Exists(nombreArchivo))
                 {
-                    AlgoritmoQ(boardInfo, currentPos, goals);
+                    AlgoritmoQ(boardInfo, goals);
                     EscribirFichero(boardInfo, nombreArchivo);
                 }
                 else
                 {
                     LeerFichero(boardInfo, nombreArchivo);
                 }
-
-
             }
 
-            //var val = Random.Range(0, 4);
             int val = ObtenerMejorAccion(currentPos.ColumnId, currentPos.RowId);
             if (val == 0) return Locomotion.MoveDirection.Up;
             if (val == 1) return Locomotion.MoveDirection.Down;
             if (val == 2) return Locomotion.MoveDirection.Left;
             return Locomotion.MoveDirection.Right;
-
-
         }
     }
 }

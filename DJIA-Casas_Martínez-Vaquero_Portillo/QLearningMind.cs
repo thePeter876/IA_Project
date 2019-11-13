@@ -17,6 +17,11 @@ namespace Assets.Scripts.SampleMind
         float[,,] tablaQ;             // Array tridimensional que contiene los valores de calidad. [posición x entorno, posición y entorno, acción a tomar]
         bool generadaTablaQ = false;  // Booleano que usamos para que la tablaQ se rellene una sola vez
 
+        private void Start()
+        {
+            Debug.Log("started");
+        }
+
         void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) // Función que crea un nuevo fichero y lo rellena con los datos de la tablaQ
         {
             StreamWriter fichero;

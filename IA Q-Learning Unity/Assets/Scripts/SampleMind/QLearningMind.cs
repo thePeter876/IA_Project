@@ -13,9 +13,9 @@ namespace Assets.Scripts.SampleMind
         [SerializeField] int recompensaMeta = 100;         // Recompensa asignada por llegar a la meta
         [SerializeField] int recompensaMuro = -10;         // Recompensa asignada por llegar a un muro
 
-        const int numAcciones = 4;    // Número de acciones posibles en cada estado (moverse hacia N, S, O, E)
-        float[,,] tablaQ;             // Array tridimensional que contiene los valores de calidad. [posición x entorno, posición y entorno, acción a tomar]
-        bool generadaTablaQ = false;  // Booleano que usamos para que la tablaQ se rellene una sola vez
+        const int numAcciones = 4;      // Número de acciones posibles en cada estado (moverse hacia N, S, O, E)
+        float[,,] tablaQ;               // Array tridimensional que contiene los valores de calidad. [posición x entorno, posición y entorno, acción a tomar]
+        bool generadaTablaQ = false;    // Booleano que usamos para que la tablaQ se rellene una sola vez
 
         void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) // Función que crea un nuevo fichero y lo rellena con los datos de la tablaQ
         {
@@ -155,6 +155,27 @@ namespace Assets.Scripts.SampleMind
             }
         }
 
+        void comprobarPosicion(BoardInfo boardInfo, CellInfo currentPos, int accion)    //Esta función recibe la posición actual, la información del dominio y la acción y comprueba si existe algún conflicto
+        {
+            if (!currentPos.Walkable)                       //Si el personaje se encuentra dentro de una pared, se muestra un mensaje de posible error
+                Debug.Log("La posición actual no es andable, es posible que el personaje no pueda continuar, pero se intentará de todos modos");
+
+
+            int nextPosX = currentPos.ColumnId;             //Se calcula la próxima posición
+            int nextPosY = currentPos.RowId;
+
+            switch (accion)
+            {
+                case 0: nextPosY++; break; // arriba
+                case 1: nextPosY--; break; // abajo
+                case 2: nextPosX--; break; // izquierda
+                case 3: nextPosX++; break; // derecha
+            }
+
+            if (!boardInfo.CellInfos[nextPosX, nextPosY].Walkable)
+                Debug.Log("La posición a la que se dirige el personaje no es andable, es posible que no sea posible llegar a la meta. Pruebe con otra semilla.");
+        }
+
         public override void Repath()
         {
             
@@ -164,6 +185,7 @@ namespace Assets.Scripts.SampleMind
         {
             if (!generadaTablaQ)                                                        // Si la tablaQ no ha sido generada aún
             {
+                
                 generadaTablaQ = true;
 
                 Loader cargador = GameObject.Find("Loader").GetComponent<Loader>();     // Encontramos el cargador para poder acceder a la semilla
@@ -181,7 +203,9 @@ namespace Assets.Scripts.SampleMind
                 }
             }
 
+            
             int val = ObtenerMejorAccion(currentPos.ColumnId, currentPos.RowId);        // Se decide la siguiente acción en función del mejor valor de calidad para el estado actual y se devuelve el movimiento correspondiente
+            comprobarPosicion(boardInfo, currentPos, val);                              // Se comprueba si existe algún conflicto
             if (val == 0) return Locomotion.MoveDirection.Up;
             if (val == 1) return Locomotion.MoveDirection.Down;
             if (val == 2) return Locomotion.MoveDirection.Left;

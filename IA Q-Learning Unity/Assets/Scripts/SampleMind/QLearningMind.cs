@@ -17,6 +17,16 @@ namespace Assets.Scripts.SampleMind
         float[,,] tablaQ;               // Array tridimensional que contiene los valores de calidad. [posición x entorno, posición y entorno, acción a tomar]
         bool generadaTablaQ = false;    // Booleano que usamos para que la tablaQ se rellene una sola vez
 
+        private void Start()                                                            //Al inicio de la ejecución
+        {
+            RandomMind rm = GetComponent<RandomMind>();                                 //Se obtiene el componente RandomMind en caso de que esté presente
+            if (rm)                                                                     //Si existe el componente
+            {
+                Debug.Log("Eliminando el script randomMind ya que no se va a usar");
+                Destroy(rm);                                                            //Se destruye el componente para que no pueda generar ningún tipo de conflicto
+            }
+        }
+
         void EscribirFichero(BoardInfo boardInfo, string nombreArchivo) // Función que crea un nuevo fichero y lo rellena con los datos de la tablaQ
         {
             StreamWriter fichero;
@@ -171,6 +181,9 @@ namespace Assets.Scripts.SampleMind
                 case 2: nextPosX--; break; // izquierda
                 case 3: nextPosX++; break; // derecha
             }
+
+            nextPosX = Mathf.Clamp(nextPosX, 0, boardInfo.NumColumns - 1);  // Clampeamos la posición entre los límites para no salir del dominio
+            nextPosY = Mathf.Clamp(nextPosY, 0, boardInfo.NumRows - 1);
 
             if (!boardInfo.CellInfos[nextPosX, nextPosY].Walkable)
                 Debug.Log("La posición a la que se dirige el personaje no es andable, es posible que no sea posible llegar a la meta. Pruebe con otra semilla.");

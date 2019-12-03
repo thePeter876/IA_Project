@@ -1,0 +1,6 @@
+hacer una lista de nodos que guarda una referencia al nodo que lo ha creado y la f*
+ordenar la lista con el método sort indicando la variable de nuestra clase nodo en función de la cual tiene que ordenar
+no hay que hacer un árbol como tal, solo la lista de nodos
+hacer esto en bucle hasta que la meta quede al principio de la lista
+el camino a recorrer lo podremos saber ascendiendo hacia los padres del nodo meta
+todo ese camino se guarda en una lista de currentPlan

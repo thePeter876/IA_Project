@@ -11,3 +11,4 @@ La forma de comprobar si no hay un camino posible para llegar a la meta será co
 1223
 1255
 1060
+1225

@@ -4,3 +4,10 @@ no hay que hacer un árbol como tal, solo la lista de nodos
 hacer esto en bucle hasta que la meta quede al principio de la lista
 el camino a recorrer lo podremos saber ascendiendo hacia los padres del nodo meta
 todo ese camino se guarda en una lista de currentPlan
+
+La forma de comprobar si no hay un camino posible para llegar a la meta será comprobar si la lista de nodos está vacía
+
+1222
+1223
+1255
+1060

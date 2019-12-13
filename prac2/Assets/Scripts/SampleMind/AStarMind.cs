@@ -10,7 +10,7 @@ namespace Assets.Scripts.SampleMind
         //List<Node> nodes = new List<Node>();
         List<Node> nodes = new List<Node>();
         List<Node> currentPlan = new List<Node>();
-        Node finalNode;
+        Node finalNode = null;
         NodeComparer nodeComparer = new NodeComparer();
 
         public override void Repath()
@@ -22,19 +22,33 @@ namespace Assets.Scripts.SampleMind
         public void setPlan(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
         {
             Vector2Int goal  = new Vector2Int((int)goals[0].GetPosition.x,   (int)goals[0].GetPosition.y);
-            Vector2Int start = new Vector2Int((int)currentPos.GetPosition.x, (int)currentPos.GetPosition.y);
 
             nodes.Add(new Node(currentPos, goal)); //NODO INICIAL            
-            expandNode(boardInfo, start, goal);
+            while(finalNode == null) expandNode(boardInfo, goal);
+
+            Node next = finalNode;
+            while(next != null)
+            {
+                currentPlan.Add(next);
+                next = next.getParent();
+            }
+            currentPlan.RemoveAt(currentPlan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
+                                                         //la descartamos, ya que no queremos que el jugador vaya a su propia posición
+
         }
 
-        public void expandNode(BoardInfo boardInfo, Vector2Int currentPos, Vector2Int goal)
+        //EXPAND NODE NO DEBE RECIBIR CURRENT POS, SOLO USAR EL PRIMER NODO DE LA LISTA
+
+        public void expandNode(BoardInfo boardInfo, Vector2Int goal)
         {
-            //ORDENAR LA LISTA
+            //CURRENT POS NO SE RECIBE, ES LA POSICIÓN DEL PRIMER NODO DE LA LISTA TRAS ORDENAR
             
+            //ORDENAR LA LISTA
+
             nodes.Sort(nodeComparer);
             Node first = nodes[0];      //REFERENCIA AL NODO 0
             nodes.RemoveAt(0);          //QUITAR NODO 0 DE LA LISTA
+            Vector2Int currentPos = new Vector2Int((int)first.getCellInfo().GetPosition.x, (int)first.getCellInfo().GetPosition.y);
 
             if (currentPos == goal)
             {
@@ -44,12 +58,16 @@ namespace Assets.Scripts.SampleMind
 
 
             Vector2Int[] children = new Vector2Int[4];
-            children[0] = new Vector2Int(currentPos.x,     currentPos.y + 1);
-            children[1] = new Vector2Int(currentPos.x,     currentPos.y - 1);
-            children[2] = new Vector2Int(currentPos.x - 1, currentPos.y);
-            children[3] = new Vector2Int(currentPos.x + 1, currentPos.y);
+            children[0] = new Vector2Int(currentPos.x - 1, currentPos.y);
+            children[1] = new Vector2Int(currentPos.x + 1, currentPos.y);
+            children[2] = new Vector2Int(currentPos.x,     currentPos.y + 1);
+            children[3] = new Vector2Int(currentPos.x,     currentPos.y - 1);
+            
 
             foreach (Vector2Int v in children) checkNode(boardInfo, v, goal, first);
+
+            //expandNode(boardInfo, goal);
+            //SE DEBE EXPANDIR EN EXPAND NODE, NO AQUÍ, YA QUE NO QUEREMOS EXPANDIR TODOS LOS HIJOS, SOLO EL QUE TENGA MENOR F*
         }
 
         public void checkNode(BoardInfo boardInfo, Vector2Int nodePos, Vector2Int goal, Node parent)
@@ -67,8 +85,6 @@ namespace Assets.Scripts.SampleMind
             foreach (Node n in nodes) if (n.equals(child)) return;
 
             nodes.Add(child);
-
-            expandNode(boardInfo, nodePos, goal);
         }
 
         public override Locomotion.MoveDirection GetNextMove(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
@@ -80,13 +96,12 @@ namespace Assets.Scripts.SampleMind
             if (currentPlan.Count == 0)
             {
                 setPlan(boardInfo, currentPos, goals);
-
             }
 
             if (currentPlan.Count != 0)
             {
-                CellInfo nextMove = currentPlan[0].getCellInfo();
-                currentPlan.RemoveAt(0);
+                CellInfo nextMove = currentPlan[currentPlan.Count-1].getCellInfo();
+                currentPlan.RemoveAt(currentPlan.Count - 1);
 
                 int diffX = (int)(nextMove.GetPosition.x - currentPos.GetPosition.x);
                 int diffY = (int)(nextMove.GetPosition.y - currentPos.GetPosition.y);

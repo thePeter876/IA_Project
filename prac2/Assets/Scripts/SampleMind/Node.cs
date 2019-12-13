@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Node
 {
+    int cost;
     int fStar;
     Node parent;
     CellInfo cell;
@@ -13,11 +14,14 @@ public class Node
     public Node(CellInfo cell, Vector2Int goal, Node parent = null)
     {
         //Se usa la distancia Manhattan como heurística para calcular la distancia aproximada a la meta desde la celda del nodo
-        this.fStar = (int)(Mathf.Abs(goal.x - cell.GetPosition.x) + Mathf.Abs(goal.y - cell.GetPosition.y));
         this.cell = cell;
         this.parent = parent;
-    }
 
+        if (parent != null) this.cost = parent.cost++;
+        else this.cost = 0;
+
+        this.fStar = (int)(Mathf.Abs(goal.x - cell.GetPosition.x) + Mathf.Abs(goal.y - cell.GetPosition.y)) /** 2*/ + cost;
+    }
     public int getFStar() { return fStar; }
     public Node getParent() { return parent; }
     public CellInfo getCellInfo() { return cell; }

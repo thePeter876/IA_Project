@@ -9,6 +9,7 @@ namespace Assets.Scripts.SampleMind
 
         //List<Node> nodes = new List<Node>();
         List<Node> nodes = new List<Node>();
+        List<Node> visitedNodes = new List<Node>();
         List<Node> currentPlan = new List<Node>();
         Node finalNode = null;
         NodeComparer nodeComparer = new NodeComparer();
@@ -23,7 +24,11 @@ namespace Assets.Scripts.SampleMind
         {
             Vector2Int goal  = new Vector2Int((int)goals[0].GetPosition.x,   (int)goals[0].GetPosition.y);
 
-            nodes.Add(new Node(currentPos, goal)); //NODO INICIAL            
+            //NODO INICIAL 
+            Node firstNode = new Node(currentPos, goal);
+            nodes.Add(firstNode);  
+            visitedNodes.Add(firstNode);
+
             while(finalNode == null) expandNode(boardInfo, goal);
 
             Node next = finalNode;
@@ -34,7 +39,6 @@ namespace Assets.Scripts.SampleMind
             }
             currentPlan.RemoveAt(currentPlan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
                                                          //la descartamos, ya que no queremos que el jugador vaya a su propia posición
-
         }
 
         //EXPAND NODE NO DEBE RECIBIR CURRENT POS, SOLO USAR EL PRIMER NODO DE LA LISTA
@@ -58,11 +62,11 @@ namespace Assets.Scripts.SampleMind
 
 
             Vector2Int[] children = new Vector2Int[4];
+            
             children[0] = new Vector2Int(currentPos.x - 1, currentPos.y);
             children[1] = new Vector2Int(currentPos.x + 1, currentPos.y);
             children[2] = new Vector2Int(currentPos.x,     currentPos.y + 1);
             children[3] = new Vector2Int(currentPos.x,     currentPos.y - 1);
-            
 
             foreach (Vector2Int v in children) checkNode(boardInfo, v, goal, first);
 
@@ -82,9 +86,10 @@ namespace Assets.Scripts.SampleMind
             Node child = new Node(boardInfo.CellInfos[nodePos.x, nodePos.y], goal, parent);
 
             //Comprobar si el nodo hijo ya está en la lista (EVITAR CICLOS)
-            foreach (Node n in nodes) if (n.equals(child)) return;
+            foreach (Node n in visitedNodes) if (n.equals(child)) return;
 
             nodes.Add(child);
+            visitedNodes.Add(child);
         }
 
         public override Locomotion.MoveDirection GetNextMove(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)

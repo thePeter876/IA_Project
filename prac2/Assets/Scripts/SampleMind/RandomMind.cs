@@ -11,11 +11,37 @@ namespace Assets.Scripts.SampleMind
 
         public override Locomotion.MoveDirection GetNextMove(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
         {
+            Vector2Int currentPosition = new Vector2Int(currentPos.ColumnId, currentPos.RowId);
+
             var val = Random.Range(0, 4);
-            if (val == 0) return Locomotion.MoveDirection.Up;
-            if (val == 1) return Locomotion.MoveDirection.Down;
-            if (val == 2) return Locomotion.MoveDirection.Left;
-            return Locomotion.MoveDirection.Right;
+            switch (val)
+            {
+                case 0:
+                    if (currentPosition.y < boardInfo.NumRows) {
+                        if (boardInfo.CellInfos[currentPosition.x, currentPosition.y + 1].Walkable)
+                            return Locomotion.MoveDirection.Up; 
+                    } break;
+
+                case 1:
+                    if (currentPosition.y > 0){
+                        if (boardInfo.CellInfos[currentPosition.x, currentPosition.y - 1].Walkable)
+                            return Locomotion.MoveDirection.Down;
+                    } break;
+
+                case 2:
+                    if (currentPosition.x > 0) {
+                        if (boardInfo.CellInfos[currentPosition.x - 1, currentPosition.y].Walkable)
+                            return Locomotion.MoveDirection.Left;
+                    } break;
+
+                case 3:
+                    if (currentPosition.x < boardInfo.NumColumns){
+                        if (boardInfo.CellInfos[currentPosition.x + 1, currentPosition.y].Walkable)
+                            return Locomotion.MoveDirection.Right;
+                    } break;
+            }
+            
+            return Locomotion.MoveDirection.None;
         }
     }
 }

@@ -22,23 +22,25 @@ namespace Assets.Scripts.SampleMind
 
         public void setPlan(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
         {
-            Vector2Int goal  = new Vector2Int((int)goals[0].GetPosition.x,   (int)goals[0].GetPosition.y);
-
             //NODO INICIAL 
             Node firstNode = new Node(currentPos, goal);
             nodes.Add(firstNode);  
             visitedNodes.Add(firstNode);
 
-            while(finalNode == null) expandNode(boardInfo, goal);
+            while(finalNode == null && nodes.Count > 0) expandNode(boardInfo, goal);
 
-            Node next = finalNode;
-            while(next != null)
+            if (nodes.Count == 0) Debug.Log("No se ha podido encontrar la meta");
+            else
             {
-                currentPlan.Add(next);
-                next = next.getParent();
+                Node next = finalNode;
+                while (next != null)
+                {
+                    currentPlan.Add(next);
+                    next = next.getParent();
+                }
+                currentPlan.RemoveAt(currentPlan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
+                                                             //la descartamos, ya que no queremos que el jugador vaya a su propia posición
             }
-            currentPlan.RemoveAt(currentPlan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
-                                                         //la descartamos, ya que no queremos que el jugador vaya a su propia posición
         }
 
         //EXPAND NODE NO DEBE RECIBIR CURRENT POS, SOLO USAR EL PRIMER NODO DE LA LISTA
@@ -99,7 +101,13 @@ namespace Assets.Scripts.SampleMind
             if (Input.GetKey(KeyCode.S)) return Locomotion.MoveDirection.Down;
             if (Input.GetKey(KeyCode.D)) return Locomotion.MoveDirection.Right;
 
-            if (currentPlan.Count == 0) setPlan(boardInfo, currentPos, goals);
+            if (currentPlan.Count == 0)
+            {
+                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+                Vector2Int goal = new Vector2Int((int)goals[0].GetPosition.x, (int)goals[0].GetPosition.y);
+
+                setPlan(boardInfo, currentPos, goals);
+            }
 
             if (currentPlan.Count != 0)
             {

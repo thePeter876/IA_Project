@@ -15,11 +15,21 @@ namespace Assets.Scripts.SampleMind
         NodeComparer nodeComparer = new NodeComparer();
         bool searchingEnemies = false;
         Vector2Int finalGoal;
+        
+
+        private void Start()                                                            //Al inicio de la ejecución
+        {
+            RandomMind rm = GetComponent<RandomMind>();                                 //Se obtiene el componente RandomMind en caso de que esté presente
+            if (rm)                                                                     //Si existe el componente
+            {
+                Debug.Log("Eliminando el script randomMind ya que no se va a usar");
+                Destroy(rm);                                                            //Se destruye el componente para que no pueda generar ningún tipo de conflicto
+            }
+        }
 
         public override void Repath()
         {
-            nodes.Clear();
-            Debug.Log("Limpiando");
+
         }
 
         public List<Node> setPlan(BoardInfo boardInfo, CellInfo currentPos, Vector2Int goal)

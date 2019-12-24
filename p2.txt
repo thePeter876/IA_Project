@@ -12,3 +12,10 @@ La forma de comprobar si no hay un camino posible para llegar a la meta será co
 1255
 1060
 1225
+
+CAMBIOS REALIZADOS
+script A* mind
+script node
+hacer que random mind no pueda ir hacia una pared
+
+SI NO SE PUEDE LLEGAR A LA META QUÉ PASA EN NUESTRO ALGORITMO

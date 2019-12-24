@@ -94,14 +94,12 @@ namespace Assets.Scripts.SampleMind
 
         public override Locomotion.MoveDirection GetNextMove(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
         {
-            //int val = 0;
+            if (Input.GetKey(KeyCode.A)) return Locomotion.MoveDirection.Left;
+            if (Input.GetKey(KeyCode.W)) return Locomotion.MoveDirection.Up;
+            if (Input.GetKey(KeyCode.S)) return Locomotion.MoveDirection.Down;
+            if (Input.GetKey(KeyCode.D)) return Locomotion.MoveDirection.Right;
 
-            //currentPlan.Add(new Node(boardInfo.CellInfos[(int)(currentPos.GetPosition.x), (int)(currentPos.GetPosition.y+1)], goals[0]));
-
-            if (currentPlan.Count == 0)
-            {
-                setPlan(boardInfo, currentPos, goals);
-            }
+            if (currentPlan.Count == 0) setPlan(boardInfo, currentPos, goals);
 
             if (currentPlan.Count != 0)
             {
@@ -124,10 +122,6 @@ namespace Assets.Scripts.SampleMind
                 }
             }
 
-
-            //if (val == 0) return Locomotion.MoveDirection.Up;
-            //if (val == 1) return Locomotion.MoveDirection.Down;
-            //if (val == 2) return Locomotion.MoveDirection.Left;
             Debug.Log("Me voy a la derecha pero porque no me he metido en el switch");
             return Locomotion.MoveDirection.Right;
         }

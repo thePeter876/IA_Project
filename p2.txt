@@ -17,5 +17,7 @@ CAMBIOS REALIZADOS
 script A* mind
 script node
 hacer que random mind no pueda ir hacia una pared
+cambiado prefab de enemigo
+nueva etiqueta Enemy
 
 SI NO SE PUEDE LLEGAR A LA META QUÉ PASA EN NUESTRO ALGORITMO

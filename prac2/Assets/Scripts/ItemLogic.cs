@@ -30,7 +30,7 @@ namespace Assets.Scripts
 
             if (this.Type == PlaceableItem.ItemType.Goal)
                 QuitGame();
-            if (this.Type== PlaceableItem.ItemType.Enemy)
+            if (this.Type == PlaceableItem.ItemType.Enemy)
                 GameObject.Destroy(gameObject,0.5f);
         }
 

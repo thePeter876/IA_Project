@@ -17,25 +17,25 @@ namespace Assets.Scripts.SampleMind
             switch (val)
             {
                 case 0:
-                    if (currentPosition.y < boardInfo.NumRows) {
+                    if (currentPosition.y < boardInfo.NumRows - 1) {
                         if (boardInfo.CellInfos[currentPosition.x, currentPosition.y + 1].Walkable)
                             return Locomotion.MoveDirection.Up; 
                     } break;
 
                 case 1:
-                    if (currentPosition.y > 0){
+                    if (currentPosition.y > 1){
                         if (boardInfo.CellInfos[currentPosition.x, currentPosition.y - 1].Walkable)
                             return Locomotion.MoveDirection.Down;
                     } break;
 
                 case 2:
-                    if (currentPosition.x > 0) {
+                    if (currentPosition.x > 1) {
                         if (boardInfo.CellInfos[currentPosition.x - 1, currentPosition.y].Walkable)
                             return Locomotion.MoveDirection.Left;
                     } break;
 
                 case 3:
-                    if (currentPosition.x < boardInfo.NumColumns){
+                    if (currentPosition.x < boardInfo.NumColumns - 1){
                         if (boardInfo.CellInfos[currentPosition.x + 1, currentPosition.y].Walkable)
                             return Locomotion.MoveDirection.Right;
                     } break;

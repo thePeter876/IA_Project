@@ -13,6 +13,8 @@ namespace Assets.Scripts.SampleMind
         List<Node> currentPlan = new List<Node>();
         Node finalNode = null;
         NodeComparer nodeComparer = new NodeComparer();
+        bool searchingEnemies = false;
+        Vector2Int finalGoal;
 
         public override void Repath()
         {
@@ -20,8 +22,10 @@ namespace Assets.Scripts.SampleMind
             Debug.Log("Limpiando");
         }
 
-        public void setPlan(BoardInfo boardInfo, CellInfo currentPos, CellInfo[] goals)
+        public List<Node> setPlan(BoardInfo boardInfo, CellInfo currentPos, Vector2Int goal)
         {
+            List<Node> plan = new List<Node>();
+
             //NODO INICIAL 
             Node firstNode = new Node(currentPos, goal);
             nodes.Add(firstNode);  
@@ -29,18 +33,25 @@ namespace Assets.Scripts.SampleMind
 
             while(finalNode == null && nodes.Count > 0) expandNode(boardInfo, goal);
 
-            if (nodes.Count == 0) Debug.Log("No se ha podido encontrar la meta");
+            if (nodes.Count == 0)
+            {
+                Debug.Log("No se ha podido encontrar un camino hacia el objetivo");
+            }
             else
             {
                 Node next = finalNode;
                 while (next != null)
                 {
-                    currentPlan.Add(next);
+                    plan.Add(next);
                     next = next.getParent();
                 }
-                currentPlan.RemoveAt(currentPlan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
-                                                             //la descartamos, ya que no queremos que el jugador vaya a su propia posición
+                plan.RemoveAt(plan.Count - 1); //Al ser el nodo inicial la posición original del personaje, 
+                                               //la descartamos, ya que no queremos que el jugador vaya a su propia posición
             }
+            finalNode = null;
+            nodes.Clear();
+            visitedNodes.Clear();
+            return plan;
         }
 
         //EXPAND NODE NO DEBE RECIBIR CURRENT POS, SOLO USAR EL PRIMER NODO DE LA LISTA
@@ -90,6 +101,9 @@ namespace Assets.Scripts.SampleMind
             //Comprobar si el nodo hijo ya está en la lista (EVITAR CICLOS)
             foreach (Node n in visitedNodes) if (n.equals(child)) return;
 
+            //Si estamos buscando un enemigo, no podemos pasar por la meta
+            if (searchingEnemies && finalGoal == nodePos) return; 
+
             nodes.Add(child);
             visitedNodes.Add(child);
         }
@@ -101,12 +115,33 @@ namespace Assets.Scripts.SampleMind
             if (Input.GetKey(KeyCode.S)) return Locomotion.MoveDirection.Down;
             if (Input.GetKey(KeyCode.D)) return Locomotion.MoveDirection.Right;
 
+            List<Vector2Int> enemyPositions = new List<Vector2Int>();
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
+
             if (currentPlan.Count == 0)
             {
-                GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-                Vector2Int goal = new Vector2Int((int)goals[0].GetPosition.x, (int)goals[0].GetPosition.y);
+                finalGoal = new Vector2Int(goals[0].ColumnId, goals[0].RowId);
+                if(enemies.Length > 0)
+                {
+                    searchingEnemies = true;
+                    foreach (GameObject e in enemies)
+                    {
+                        CellInfo enemyPos = e.GetComponent<EnemyBehaviour>().CurrentPosition();
+                        enemyPositions.Add(new Vector2Int(enemyPos.ColumnId, enemyPos.RowId));
+                    }
 
-                setPlan(boardInfo, currentPos, goals);
+                    foreach (Vector2Int g in enemyPositions)
+                    {
+                        List<Node> plan = setPlan(boardInfo, currentPos, g);
+                        if (plan.Count < currentPlan.Count || currentPlan.Count == 0) currentPlan = plan;
+                    }
+                }
+                else
+                {
+                    searchingEnemies = false;
+                    //Vector2Int goal = new Vector2Int((int)goals[0].GetPosition.x, (int)goals[0].GetPosition.y);
+                    currentPlan = setPlan(boardInfo, currentPos, finalGoal);
+                }
             }
 
             if (currentPlan.Count != 0)
@@ -116,6 +151,8 @@ namespace Assets.Scripts.SampleMind
 
                 int diffX = (int)(nextMove.GetPosition.x - currentPos.GetPosition.x);
                 int diffY = (int)(nextMove.GetPosition.y - currentPos.GetPosition.y);
+
+                if (enemies.Length > 0) currentPlan.Clear();
 
                 switch (diffY)
                 {
@@ -130,8 +167,8 @@ namespace Assets.Scripts.SampleMind
                 }
             }
 
-            Debug.Log("Me voy a la derecha pero porque no me he metido en el switch");
-            return Locomotion.MoveDirection.Right;
+            Debug.Log("El personaje se detiene porque no está definido el siguiente movimiento");
+            return Locomotion.MoveDirection.None;
         }
     }
 }

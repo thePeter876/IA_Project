@@ -1,0 +1,11 @@
+Autores:
+	Pedro Casas Martínez - 23329264L
+	Adrián Vaquero Portillo - 53806658K
+
+Instrucciones:
+	Crear un proyecto vacío de Unity
+	Importar el unity package proporcionado para la práctica
+	Importar el unity package generado por los autores, que va a sobreescribir algunos archivos del anterior package
+
+	Tras esto, todo debería funcionar correctamente, si no funciona, es posible que el personaje no tenga asignado un
+	script de inteligencia artificial. En ese caso, asignarle el script AStarMind ubicado en la carpeta "GrupoX"

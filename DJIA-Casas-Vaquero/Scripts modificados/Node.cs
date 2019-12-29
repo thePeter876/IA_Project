@@ -20,13 +20,13 @@ public class Node
         if (parent != null) this.cost = parent.cost++;
         else this.cost = 0;
 
-        this.fStar = (int)(Mathf.Abs(goal.x - cell.GetPosition.x) + Mathf.Abs(goal.y - cell.GetPosition.y)) /** 2*/ + cost;
+        this.fStar = (int)(Mathf.Abs(goal.x - cell.GetPosition.x) + Mathf.Abs(goal.y - cell.GetPosition.y)) + cost; //Se calcula la f* como la distancia manhattan (heurística) + el coste
     }
     public int getFStar() { return fStar; }
     public Node getParent() { return parent; }
     public CellInfo getCellInfo() { return cell; }
 
-    public bool equals(Node n)
+    public bool equals(Node n) //La función equals entre nodos solo tiene en cuenta las posiciones
     {
         Vector2Int a = new Vector2Int((int)this.cell.GetPosition.x, (int)this.cell.GetPosition.y);
         Vector2Int b = new Vector2Int((int)n.cell.GetPosition.x, (int)n.cell.GetPosition.y);
@@ -37,7 +37,7 @@ public class Node
 
 }
 
-class NodeComparer : IComparer<Node>
+class NodeComparer : IComparer<Node>    //Clase comparadora de nodos en base a su f*
 {
     public int Compare(Node a, Node b)
     {

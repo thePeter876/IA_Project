@@ -14,7 +14,7 @@ namespace Assets.Scripts.SampleMind
             Vector2Int currentPosition = new Vector2Int(currentPos.ColumnId, currentPos.RowId);
 
             var val = Random.Range(0, 4);
-            switch (val)
+            switch (val) //Para cada dirección se comprueba primero si el agente quedaría fuera del escenario o dentro de un obstáculo
             {
                 case 0:
                     if (currentPosition.y < boardInfo.NumRows - 1) {
